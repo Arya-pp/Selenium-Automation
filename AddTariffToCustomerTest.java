@@ -8,7 +8,7 @@ import java.time.Duration;
 
 public class AddTariffToCustomerTest {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
 
         ChromeDriver driver = new ChromeDriver();
         driver.get("https://demo.guru99.com/telecom/index.html");
@@ -21,29 +21,35 @@ public class AddTariffToCustomerTest {
             wait.until(ExpectedConditions.elementToBeClickable(
                 By.linkText("Add Tariff Plan to Customer"))).click();
 
-            // Enter Customer ID (use dummy or from previous run)
+            // Enter Customer ID 
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("customer_id")))
-                .sendKeys("557217");
+                .sendKeys("606810"); // change if needed
 
             // Submit
             driver.findElement(By.name("submit")).click();
 
-            // Select any tariff plan
-            wait.until(ExpectedConditions.elementToBeClickable(
-                By.xpath("(//input[@type='radio']"))).click();
+            Thread.sleep(2000);
 
-            // Submit again
-            driver.findElement(By.name("submit")).click();
-
-            // Validate success
-            String text = wait.until(
-                ExpectedConditions.visibilityOfElementLocated(By.tagName("h2"))
-            ).getText();
-
-            if (text.contains("Congratulation")) {
-                System.out.println("Test Passed - Tariff assigned");
+            if (driver.getPageSource().contains("Please enter valid customer id")) {
+                System.out.println("Invalid Customer ID ");
             } else {
-                System.out.println("Test Failed ");
+
+                // Select FIRST tariff plan
+            		((org.openqa.selenium.JavascriptExecutor) driver)
+            		.executeScript("document.querySelectorAll(\"input[type='radio']\")[0].click();");
+            		
+                driver.findElement(By.name("submit")).click();
+
+                // Validate success
+                String text = wait.until(
+                    ExpectedConditions.visibilityOfElementLocated(By.tagName("h2"))
+                ).getText();
+
+                if (text.contains("Congratulation")) {
+                    System.out.println("Test Passed - Tariff assigned");
+                } else {
+                    System.out.println("Test Failed");
+                }
             }
 
         } catch (Exception e) {
@@ -53,3 +59,5 @@ public class AddTariffToCustomerTest {
         driver.quit();
     }
 }
+
+
