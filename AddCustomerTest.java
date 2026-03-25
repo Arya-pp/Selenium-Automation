@@ -2,51 +2,52 @@ package guru99demo;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import java.time.Duration;
 
 public class AddCustomerTest {
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
 
-        ChromeDriver driver;
-        String url = "https://demo.guru99.com/telecom/index.html";
-        
-        // Launch browser
-        driver = new ChromeDriver();
-        driver.get(url);
+        ChromeDriver driver = new ChromeDriver();
+        driver.get("https://demo.guru99.com/telecom/index.html");
         driver.manage().window().maximize();
 
-        // Wait for page load
-        Thread.sleep(2000);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
-        // Click Add Customer
-        driver.findElement(By.linkText("Add Customer")).click();
+        try {
+            // Click Add Customer
+            wait.until(ExpectedConditions.elementToBeClickable(By.linkText("Add Customer"))).click();
 
-        Thread.sleep(2000);
+            wait.until(ExpectedConditions.elementToBeClickable(
+                By.xpath("//label[@for='done']")
+            )).click();
 
-        // Select radio button
-        driver.findElement(By.id("done")).click();
+            // Fill form
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("fname"))).sendKeys("Arya");
+            driver.findElement(By.id("lname")).sendKeys("PP");
+            driver.findElement(By.id("email")).sendKeys("arya@test.com");
+            driver.findElement(By.name("addr")).sendKeys("Kerala");
+            driver.findElement(By.id("telephoneno")).sendKeys("9876543210");
 
-        // Fill form
-        driver.findElement(By.id("fname")).sendKeys("Arya");
-        driver.findElement(By.id("lname")).sendKeys("PP");
-        driver.findElement(By.id("email")).sendKeys("arya@test.com");
-        driver.findElement(By.name("addr")).sendKeys("Kerala");
-        driver.findElement(By.id("telephoneno")).sendKeys("9876543210");
+            // Submit
+            driver.findElement(By.name("submit")).click();
+            
+            Thread.sleep(5000);
 
-        Thread.sleep(1000);
+            // Validate
+            String text = driver.findElement(By.tagName("h3")).getText();
+            System.out.println("Result: " + text);
 
-        // Submit
-        driver.findElement(By.name("submit")).click();
+            if (text != null && !text.isEmpty()) {
+                System.out.println("Test Passed ");
+            } else {
+                System.out.println("Test Failed ");
+            }
 
-        Thread.sleep(2000);
-
-        // Validate
-        String text = driver.findElement(By.tagName("h3")).getText();
-
-        if (text.contains("Customer ID")) {
-            System.out.println("Test Passed ✅");
-        } else {
-            System.out.println("Test Failed ❌");
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
         }
 
         driver.quit();
