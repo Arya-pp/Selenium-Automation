@@ -23,22 +23,22 @@ public class PayBillingTest {
 
             // Enter Customer ID
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("customer_id")))
-                .sendKeys("557217"); // Use valid ID if available
+                .sendKeys("606810"); // Use valid ID if available
 
             // Submit
             driver.findElement(By.name("submit")).click();
 
-            // Validate result (Bill details page)
-            String text = wait.until(
-                ExpectedConditions.visibilityOfElementLocated(By.tagName("h2"))
-            ).getText();
+            Thread.sleep(3000);
 
-            if (text.contains("Customer")) {
-                System.out.println("Test Passed ✅ - Billing page displayed");
+            String pageText = driver.getPageSource();
+
+            if (pageText.contains("Congratulation")) {
+                System.out.println("Test Passed  - Tariff assigned");
+            } else if (pageText.contains("Please enter valid customer id")) {
+                System.out.println("Invalid Customer ID ");
             } else {
-                System.out.println("Test Failed ❌");
+                System.out.println("Test Failed ");
             }
-
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
